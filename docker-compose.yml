@@ -1,0 +1,23 @@
+
+services:
+  redis:
+    image: redis
+    container_name: cache
+    expose:
+     - 6379
+  app:
+    links:
+      - redis
+    environment:
+      - REDIS_URL=redis://cache
+      - NODE_ENV=development
+      - PORT=3000
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - .:/src
+    ports:
+      - 3000:3000
+    command:
+      sh -c "node index.js"
