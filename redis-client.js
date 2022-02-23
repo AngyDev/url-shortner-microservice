@@ -1,10 +1,21 @@
-const redis = require("redis");
-const { promisify } = require("util");
-const client = redis.createClient(process.env.REDIS_URL);
+import { createClient } from "redis";
 
-module.exports = {
-  ...client,
-  getAsync: promisify(client.get).bind(client),
-  setAsync: promisify(client.set).bind(client),
-  keysAsync: promisify(client.keys).bind(client),
-};
+const client = createClient();
+
+client.on("error", (err) => console.log("Redis Client Error", err));
+
+await client.connect();
+
+async function postUrl(url, shortUrl) {
+  // Sets the key, value
+  await client.set(url, shortUrl);
+  await client.set(shortUrl, url);
+}
+
+async function findUrl(key) {
+  // Gets the key
+  const url = await client.get(key);
+  return url;
+}
+
+export { postUrl, findUrl };
