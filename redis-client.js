@@ -2,9 +2,11 @@ import { createClient } from "redis";
 
 const client = createClient();
 
-export default client;
+client.on("error", (err) => console.log("Redis Client Error", err));
 
+await client.connect();
 
+// export default client;
 
 async function postUrl(url, shortUrl) {
   // Sets the key, value
